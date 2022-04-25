@@ -1,9 +1,43 @@
 import paho.mqtt.client as mqtt
+from influxdb import InfluxDBClient
 import csv
 import time
-from datetime import datetime
+from datetime import datetime, time
 
 mqttBroker = "broker.mqttdashboard.com"
+
+connection = InfluxDBClient(
+        host="localhost",
+        port="8086",
+        username="",
+        password="vkjfnjlsdkhjdg",
+        ssl=True,
+        verify_ssl=True
+    ) 
+
+def write_to_influx(message):
+    todays_date = datetime.datetime.now()
+    timestampISO = todays_date.isoformat()
+
+    data = message.split(',')
+    dataNames = ['co2', 'temp', 'humid']
+    units = ['ppm', 'C', 'g/m3']
+
+    elements = []
+
+    for x in range(0, 2):
+        element = {
+            "measurement": dataNames[x],
+            "time": timestampISO,
+            "fields": {
+                    "value": data[x],
+                    "unit": units[x]
+                    }
+        }
+        elements.append(element)
+    
+    connection.switch_database("linux")
+    connection.write_points(elements)
 
 def write_to_file(message):
     data = message.split(',')
@@ -42,7 +76,7 @@ except KeyboardInterrupt:
     print("exiting")
     client.disconnect()
     client.loop_stop()
-
+    connection.close()
 
 # time.sleep(30)
 # client.loop_stop()
