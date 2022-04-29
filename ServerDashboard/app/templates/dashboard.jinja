@@ -75,7 +75,7 @@
     }
 
     function updateData(tbody, type) {
-        fetch("http://localhost:5000/data?dataType=" + type)
+        fetch("http://192.168.10.1:5000/data?dataType=" + type)
         .then(function(res) {
             return res.json();
         })
