@@ -1,5 +1,5 @@
 import sys
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from dbdatareader import DBDataReader
 from filedatareader import FileDataReader
@@ -44,7 +44,7 @@ def data():
     res = {
         "data": read_last_data(data_type, 10) 
     }
-    return res
+    return jsonify(res)
 
 def read_last_data(data_type, n):
     return data_reader.read_latest_data(data_type, n)
