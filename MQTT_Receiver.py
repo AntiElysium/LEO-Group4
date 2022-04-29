@@ -2,17 +2,15 @@ import paho.mqtt.client as mqtt
 from influxdb import InfluxDBClient
 import csv
 import time
-from datetime import datetime, time
+import datetime
 
 mqttBroker = "broker.mqttdashboard.com"
 
 connection = InfluxDBClient(
         host="localhost",
         port="8086",
-        username="",
-        password="vkjfnjlsdkhjdg",
-        ssl=True,
-        verify_ssl=True
+        username="admin",
+        password="admin",
     ) 
 
 def write_to_influx(message):
@@ -25,7 +23,7 @@ def write_to_influx(message):
 
     elements = []
 
-    for x in range(0, 2):
+    for x in range(3):
         element = {
             "measurement": dataNames[x],
             "time": timestampISO,
