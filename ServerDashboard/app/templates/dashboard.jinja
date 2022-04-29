@@ -65,9 +65,23 @@
         top:1px;
     }
 
+    .form {
+        margin-left: 20px;
+    }
+
   </style>
 
   <script>
+
+    function updateThreshold() {
+        let inp = document.querySelector("#threshold-value");
+        let type = document.querySelector("#threshold-select");
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('PATCH', "http://localhost:5000/threshold?threshold=" + type.value + "&value=" + inp.value, true);
+        xhr.send();
+    }
+
     function callAction (action) {
         let xhr = new XMLHttpRequest();
         xhr.open('GET', "http://localhost:5000/doAction?action=" + action, true);
@@ -174,10 +188,17 @@
         </div>
         <div class="div4">
         {% for btn in actions %}
-            <tr>
-                <div class="btn" onclick="callAction('{{btn[1]}}')">{{btn[0]}}</div>
-            </tr>
+            <div class="btn" onclick="callAction('{{btn[1]}}')">{{btn[0]}}</div>
         {% endfor %}
+            <div class="form">
+                <input id="threshold-value" type="text" placeholder="Threshold">
+                <select name="Threshold" id="threshold-select">
+                    <option value="low" selected>Low</option>
+                    <option value="middle">Middle</option>
+                    <option value="high">High</option>
+                </select>
+                <div class="btn" onclick="updateThreshold()">Update</div>
+            </div>
         </div>
     </div> 
 </body>

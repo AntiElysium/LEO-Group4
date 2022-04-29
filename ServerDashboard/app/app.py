@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from dbdatareader import DBDataReader
 from filedatareader import FileDataReader
+import paho.mqtt.publish as mqtt_publish
 
 from datareader import DataReader
 
@@ -45,6 +46,15 @@ def data():
         "data": read_last_data(data_type, 10) 
     }
     return jsonify(res)
+
+@app.route("/threshold", methods=["PATCH"])
+def updateThreshold():
+    threshold = request.args.get('threshold')
+    value = request.args.get('value')
+
+    mqtt_publish.single(f"leo1-04/project/threshold/{threshold}", value, hostname="broker.mqttdashboard.com")
+
+    return ""
 
 def read_last_data(data_type, n):
     return data_reader.read_latest_data(data_type, n)
