@@ -14,12 +14,10 @@ class DBDataReader:
         if ":" in self.db_address:
             tokens = self.db_address.split(":")
             self.client = InfluxDBClient(host=tokens[0], port=tokens[1], 
-                                         username=self.db_user, password=self.db_password,
-                                         ssl=True, verify_ssl=True)
+                                         username=self.db_user, password=self.db_password)
         else:
             self.client = InfluxDBClient(host=self.db_address, port=8086,
-                                         username=self.db_user, password=self.db_password,
-                                         ssl=True, verify_ssl=True)
+                                         username=self.db_user, password=self.db_password)
             
         self.client.switch_database("linux")
         self.close = self.client.close
