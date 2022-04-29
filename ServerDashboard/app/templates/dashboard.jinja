@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <style>
+    body {
+        margin: 0;
+    }
+
+    .parent {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    grid-column-gap: 5px;
+    grid-row-gap: 5px;
+    width: 100%;
+    height: 100vh;
+    padding:20px;
+    }
+
+    .div1 { grid-area: 1 / 1 / 5 / 3; }
+    .div2 { grid-area: 1 / 3 / 5 / 5; }
+    .div3 { grid-area: 1 / 5 / 5 / 7; }
+    .div4 { 
+        grid-area: 5 / 1 / 6 / 7; 
+        display: flex;
+        justify-content: flex-start;
+        gap: 20px;
+    } 
+
+    .tg  {border-collapse:collapse;border-color:#aaa;border-spacing:0;}
+    .tg td{background-color:#fff;border-color:#aaa;border-style:solid;border-width:1px;color:#333;
+    font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+    .tg th{background-color:#f38630;border-color:#aaa;border-style:solid;border-width:1px;color:#fff;
+    font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+    .tg .tg-0lax{text-align:left;vertical-align:top}
+    .tg .tg-dg7a{background-color:#FCFBE3;text-align:left;vertical-align:top}
+
+    .btn {
+        box-shadow:inset 0px 1px 0px 0px #bee2f9;
+        background:linear-gradient(to bottom, #63b8ee 5%, #468ccf 100%);
+        background-color:#63b8ee;
+        border-radius:6px;
+        border:1px solid #3866a3;
+        display:inline-block;
+        cursor:pointer;
+        color:#14396a;
+        font-family:Arial;
+        font-size:15px;
+        font-weight:bold;
+        padding:10px 24px;
+        text-decoration:none;
+        text-shadow:0px 1px 0px #7cacde;
+        max-height:24px;
+    }
+    .btn:hover {
+        background:linear-gradient(to bottom, #468ccf 5%, #63b8ee 100%);
+        background-color:#468ccf;
+    }
+    .btn:active {
+        position:relative;
+        top:1px;
+    }
+
+  </style>
+
+  <script>
+    function callAction (action) {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', "http://localhost:5000/doAction?action=" + action, true);
+        xhr.send();
+    }
+
+    function updateData(tbody, type) {
+        fetch("http://localhost:5000/data?dataType=" + type)
+        .then(function(res) {
+            return res.json();
+        })
+        .then(function(data) {
+            tbody.innerHTML = "";
+            data["data"].forEach((el) => {
+                let trEl = document.createElement("tr");
+
+                let timeEl = document.createElement("td");
+                timeEl.innerText = el[0];
+                trEl.appendChild(timeEl);
+                let valueEl = document.createElement("td");
+                valueEl.innerText = el[2] + el[3];
+                trEl.appendChild(valueEl);
+
+                tbody.appendChild(trEl);
+            })
+        })
+    }
+
+    window.onload = function() {
+        let tempBody = document.querySelector("#temp-body");
+        let co2Body = document.querySelector("#co2-body");
+        let humidBody = document.querySelector("#humid-body");
+
+        setInterval(() => {
+            updateData(tempBody, "temp");
+        }, 1000);
+        setInterval(() => {
+            updateData(co2Body, "co2");
+        }, 1000);
+        setInterval(() => {
+            updateData(humidBody, "humid");
+        }, 1000);
+    }
+  </script>
+</head>
+<body>
+    <div class="parent">
+        <div class="div1">
+            <h2>Temperature</h2>
+            <table class="tg">
+                <thead>
+                <tr>
+                    <th class="tg-0lax">Timestamp<br></th>
+                    <th class="tg-0lax">Value<br></th>
+                </tr>
+                </thead>
+                <tbody id="temp-body">
+                {% for reading in temp %}
+                    <tr>
+                        <td class="tg-dg7a">{{reading[0]}}</td>
+                        <td class="tg-dg7a">{{reading[2] + " " + reading[3]}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="div2">
+            <h2>CO2</h2>
+            <table class="tg">
+                <thead>
+                <tr>
+                    <th class="tg-0lax">Timestamp<br></th>
+                    <th class="tg-0lax">Value<br></th>
+                </tr>
+                </thead>
+                <tbody id="co2-body">
+                {% for reading in co2 %}
+                    <tr>
+                        <td class="tg-dg7a">{{reading[0]}}</td>
+                        <td class="tg-dg7a">{{reading[2] + " " + reading[3]}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="div3">
+            <h2>Humidity</h2>
+            <table class="tg">
+                <thead>
+                <tr>
+                    <th class="tg-0lax">Timestamp<br></th>
+                    <th class="tg-0lax">Value<br></th>
+                </tr>
+                </thead>
+                <tbody id="humid-body">
+                {% for reading in humid %}
+                    <tr>
+                        <td class="tg-dg7a">{{reading[0]}}</td>
+                        <td class="tg-dg7a">{{reading[2] + " " + reading[3]}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="div4">
+        {% for btn in actions %}
+            <tr>
+                <div class="btn" onclick="callAction('{{btn[1]}}')">{{btn[0]}}</div>
+            </tr>
+        {% endfor %}
+        </div>
+    </div> 
+</body>
+</html>
