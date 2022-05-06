@@ -9,8 +9,8 @@ mqttBroker = "broker.mqttdashboard.com"
 connection = InfluxDBClient(
         host="localhost",
         port="8086",
-        username="admin",
-        password="admin",
+	username="admin",
+	password="admin"
     ) 
 
 def write_to_influx(message):
@@ -56,7 +56,7 @@ def write_to_file(message):
 def on_message(client, data, message):
     decodedMessage = str(message.payload.decode("utf-8"))
     print("Message: " , decodedMessage)
-    write_to_file(decodedMessage)
+    write_to_influx(decodedMessage)
 
 client = mqtt.Client("Python_Server")
 client.connect(mqttBroker)
